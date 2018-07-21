@@ -1,0 +1,77 @@
+.386
+STACK SEGMENT USE16 STACK
+DB 200 DUP(0)
+STACK ENDS
+CODE SEGMENT USE16
+ASSUME SS:STACK,CS:CODE
+START:
+	MOV  AX , 0
+	MOV  DS , AX
+L1:
+  MOV  AH , 1;输入读入
+	INT 21H
+	CMP  AL , 'q'
+	JE   QUIT
+	SUB  AL , 30H   ;字符转化为十进制数字
+	OUT  70H , AL
+	IN   AL , 71H
+	MOV  AH , AL
+	AND  AL , 0FH
+	SHR  AH , 4
+	ADD  AX , 3030H  ;BCD编码变成对应字符的ascii
+	MOV  BX , AX
+	MOV  DL , 0AH
+	MOV  AH ,  2
+	INT  21H
+	MOV  DL , 0DH
+	MOV  AH , 2
+	INT  21H
+	MOV  DL , BH
+	MOV  AH , 2
+	INT  21H
+	MOV  DL , BL
+	MOV  AH , 2
+	INT  21H
+	MOV  DL , 0AH 	;输出回车换行
+	MOV  AH , 2
+	INT  21H
+	SUB  BX , 3030H
+	MOV  AL , BH
+	MOV  CL , 10
+	MUL  CL
+	ADD  AL , BL
+	MOV  AH , 0
+	MOV  CL , 16
+	DIV  CL
+	MOV  BH , AL
+	MOV  BL , AH
+	ADD  BX , 3030H
+	CMP  BL , 3AH
+	JAE  L2
+PRINT:
+
+  MOV  DL , BH
+	MOV  AH , 2
+	INT  21H
+	MOV  DL , BL
+	MOV  AH , 2
+	INT  21H
+	MOV  DL , 'H'
+	MOV  AH , 2
+	INT  21H
+	MOV  DL , 0AH
+	MOV  AH , 2
+	INT  21H
+	MOV  DL , 0DH
+	MOV  AH , 2
+	INT  21H
+	JMP  L1
+L2:
+  ADD  BL , 7
+	JMP  PRINT
+QUIT:
+   MOV  AH , 4CH
+	 INT  21H
+
+CODE  ENDS
+END  START

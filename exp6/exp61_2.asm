@@ -1,0 +1,21 @@
+.386
+
+STACK SEGMENT STACK USE16
+      DB 200 DUP(0)
+STACK ENDS
+CODE SEGMENT USE16
+     ASSUME CS:CODE ,SS:STACK
+START:
+      XOR AX , AX
+      MOV DS , AX
+      MOV AX , DS:[1H * 4]
+      MOV BX , DS:[1H * 4 + 2]
+
+      MOV CX , DS:[10H * 4]
+      MOV DX , DS:[10H * 4 + 2]
+
+      MOV  AH ,4CH
+      INT 21H
+
+CODE ENDS
+   END START
